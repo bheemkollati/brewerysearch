@@ -86,7 +86,7 @@ function SearchScreen() {
         value={searchTerm}
       />
 
-      {breweryData.length > 0 ? (
+      {breweryData.length > 0 || searchTerm === "" ? (
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
