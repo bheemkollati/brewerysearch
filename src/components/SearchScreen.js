@@ -17,6 +17,7 @@ function SearchScreen() {
   //   const [searchTerm, setSearchTerm] = useState("");
   const [breweryData, setBreweryData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [initial, setInitial] = useState(true);
 
   const { searchTerm, setSearchTerm, breweryViewCount, setBreweryViewCount } =
     useContext(searchContext);
@@ -43,9 +44,10 @@ function SearchScreen() {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     const delayDebounceFn = setTimeout(() => {
       console.log(searchTerm);
-      setIsLoading(true);
+
       axios
         .get(
           `https://api.openbrewerydb.org/breweries/search?query=${searchTerm}`
@@ -54,6 +56,7 @@ function SearchScreen() {
           console.log(response.data, "resoposf");
           setBreweryData(response.data);
           setIsLoading(false);
+          setInitial(false);
         })
         .catch((err) => {
           console.log(err);
@@ -93,6 +96,8 @@ function SearchScreen() {
         <CircularProgress sx={{ maargin: "5px" }} />
       ) : (
         <>
+          {console.log(isLoading, searchTerm, breweryData)}
+
           <List
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
