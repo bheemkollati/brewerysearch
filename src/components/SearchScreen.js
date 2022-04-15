@@ -44,10 +44,10 @@ function SearchScreen() {
   };
 
   useEffect(() => {
-    setIsLoading(true);
+    console.log("search test", searchTerm, isLoading);
+    setIsLoading(searchTerm === "" ? false : true);
     const delayDebounceFn = setTimeout(() => {
       console.log(searchTerm);
-
       axios
         .get(
           `https://api.openbrewerydb.org/breweries/search?query=${searchTerm}`
