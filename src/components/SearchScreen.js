@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   List,
   ListItem,
   ListItemText,
@@ -15,6 +16,7 @@ import { searchContext } from "../App";
 function SearchScreen() {
   //   const [searchTerm, setSearchTerm] = useState("");
   const [breweryData, setBreweryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { searchTerm, setSearchTerm, breweryViewCount, setBreweryViewCount } =
     useContext(searchContext);
@@ -43,6 +45,7 @@ function SearchScreen() {
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       console.log(searchTerm);
+      setIsLoading(true);
       axios
         .get(
           `https://api.openbrewerydb.org/breweries/search?query=${searchTerm}`
@@ -50,6 +53,7 @@ function SearchScreen() {
         .then((response) => {
           console.log(response.data, "resoposf");
           setBreweryData(response.data);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);
@@ -85,30 +89,40 @@ function SearchScreen() {
         onChange={handleChange}
         value={searchTerm}
       />
-
-      {breweryData.length > 0 || searchTerm === "" ? (
-        <List
-          sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-        >
-          {breweryData.slice(0, breweryViewCount).map((brewery, index) => (
-            <ListItem key={index} onClick={() => handleBrewery(brewery)}>
-              <ListItemText
-                primary={brewery.name}
-                sx={{
-                  "&:hover": { cursor: "pointer", backgroundColor: "#F8F9FA" },
-                }}
-              />
-            </ListItem>
-          ))}
-        </List>
+      {isLoading ? (
+        <CircularProgress sx={{ maargin: "5px" }} />
       ) : (
-        <Typography variant="body1">No data found</Typography>
+        <>
+          <List
+            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+          >
+            {breweryData.slice(0, breweryViewCount).map((brewery, index) => (
+              <ListItem key={index} onClick={() => handleBrewery(brewery)}>
+                <ListItemText
+                  primary={brewery.name}
+                  sx={{
+                    "&:hover": {
+                      cursor: "pointer",
+                      backgroundColor: "#F8F9FA",
+                    },
+                  }}
+                />
+              </ListItem>
+            ))}
+          </List>
+
+          {breweryData.length === 0 && searchTerm.length > 0 && (
+            <Typography variant="body1">No data found</Typography>
+          )}
+        </>
       )}
-      {breweryViewCount < breweryData.length && breweryData.length > 0 ? (
+      {breweryViewCount < breweryData.length &&
+      breweryData.length > 0 &&
+      !isLoading ? (
         <Button variant="contained" onClick={handlePageViewCount}>
           Load More
         </Button>
-      ) : breweryData.length > 5 ? (
+      ) : breweryData.length > 5 && !isLoading ? (
         <Button variant="contained" onClick={handlePageViewCount}>
           See Less
         </Button>
